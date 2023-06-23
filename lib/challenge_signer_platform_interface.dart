@@ -17,7 +17,7 @@ abstract class ChallengeSignerPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<Credential> createCredential(List<int> challenge, RelyingParty rp, User user);
+  Future<Credential> createCredential(String applicationName);
 
-  Future<Assertion> getAssertion(List<int> challenge, String rpId, {List<List<int>>? allowCredentialIds});
+  Future<Assertion> getAssertion(String challenge, String rpId, {List<List<int>>? allowCredentialIds});
 }

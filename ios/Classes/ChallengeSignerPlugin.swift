@@ -10,7 +10,11 @@ public class ChallengeSignerPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
-    case "getPlatformVersion":
+    case "createKey":
+      var error: Unmanaged<CFError>?
+      guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
+        throw error!.takeRetainedValue() as Error
+      }
       result("iOS " + UIDevice.current.systemVersion)
     default:
       result(FlutterMethodNotImplemented)

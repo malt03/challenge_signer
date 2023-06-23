@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 
@@ -11,14 +12,16 @@ class ChallengeSignerWeb extends ChallengeSignerPlatform {
   }
 
   @override
-  createCredential(challenge, rp, user) async {
+  createCredential(applicationName) async {
+    final dummy = Uint8List.fromList(utf8.encode("dummy")).buffer;
+
     final publicKey = {
-      'challenge': Uint8List.fromList(challenge).buffer,
-      'rp': rp.toMap(),
+      'challenge': dummy,
+      'rp': {'name': applicationName},
       'user': {
-        'id': Uint8List.fromList(user.id).buffer,
-        'name': user.name,
-        'displayName': user.displayName,
+        'id': dummy,
+        'name': 'dummy',
+        'displayName': 'dummy',
       },
       'pubKeyCredParams': [
         {'type': 'public-key', 'alg': -7}
@@ -28,12 +31,11 @@ class ChallengeSignerWeb extends ChallengeSignerPlatform {
     };
 
     final PublicKeyCredential credential = await window.navigator.credentials!.create({'publicKey': publicKey});
-    final AuthenticatorAttestationResponse response = credential.response as AuthenticatorAttestationResponse;
+    final response = credential.response as AuthenticatorAttestationResponse;
 
     return Credential(
       credentialId: credential.rawId!.asUint8List(),
-      publicKey: response.attestationObject!.asUint8List(),
-      clientData: response.clientDataJson!.asUint8List(),
+      attestationObject: response.attestationObject!.asUint8List(),
     );
   }
 
@@ -41,7 +43,7 @@ class ChallengeSignerWeb extends ChallengeSignerPlatform {
   getAssertion(challenge, rpId, {allowCredentialIds}) async {
     final publicKey = {
       'allowCredentials': allowCredentialIds?.map((id) => {'id': Uint8List.fromList(id).buffer, 'type': 'public-key'}).toList(),
-      'challenge': Uint8List.fromList(challenge).buffer,
+      'challenge': Uint8List.fromList(utf8.encode(challenge)).buffer,
       'timeout': 60000,
     };
 

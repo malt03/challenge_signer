@@ -42,8 +42,9 @@ class MyApp extends HookWidget {
               TextButton(
                 child: const Text('Register'),
                 onPressed: () async {
-                  final credential = await _challengeSignerPlugin.createCredential(base64Decode(challenge), rp, user);
+                  final credential = await _challengeSignerPlugin.createCredential("Sample App");
                   credentialIdState.value = credential.credentialId;
+                  print(base64Encode(credential.attestationObject));
                 },
               ),
               TextButton(
@@ -51,11 +52,14 @@ class MyApp extends HookWidget {
                 onPressed: () async {
                   if (credentialId == null) return;
                   final assertion = await _challengeSignerPlugin.getAssertion(
-                    base64Decode(challenge),
+                    challenge,
                     rp.id,
                     allowCredentialIds: [credentialId],
                   );
-                  print(assertion);
+                  print(
+                      "const loginAuthenticatorData = Buffer.from(\"${base64Encode(assertion.authenticatorData)}\", \"base64\");");
+                  print("const loginClientDataJSON = Buffer.from(\"${base64Encode(assertion.clientData)}\", \"base64\");");
+                  print("const loginSignature = Buffer.from(\"${base64Encode(assertion.signature)}\", \"base64\");");
                 },
               ),
             ],

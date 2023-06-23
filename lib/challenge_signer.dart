@@ -8,12 +8,12 @@ class ChallengeSigner {
   const ChallengeSigner();
 
   /// Creates a new credential for the given user and relying party, using the given challenge.
-  Future<Credential> createCredential(List<int> challenge, RelyingParty rp, User user) {
-    return ChallengeSignerPlatform.instance.createCredential(challenge, rp, user);
+  Future<Credential> createCredential(String applicationName) {
+    return ChallengeSignerPlatform.instance.createCredential(applicationName);
   }
 
   /// Gets an assertion for the given challenge.
-  Future<Assertion> getAssertion(List<int> challenge, String rpId, {List<List<int>>? allowCredentialIds}) {
+  Future<Assertion> getAssertion(String challenge, String rpId, {List<List<int>>? allowCredentialIds}) {
     return ChallengeSignerPlatform.instance.getAssertion(challenge, rpId, allowCredentialIds: allowCredentialIds);
   }
 }

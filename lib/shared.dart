@@ -23,15 +23,13 @@ class RelyingParty {
 
 class Credential {
   final List<int> credentialId;
-  final List<int> publicKey;
-  final List<int> clientData;
+  final List<int> attestationObject;
 
-  const Credential({required this.credentialId, required this.publicKey, required this.clientData});
+  const Credential({required this.credentialId, required this.attestationObject});
   Credential.fromMap(dynamic map)
       : this(
           credentialId: map['credentialId'],
-          publicKey: map['publicKey'],
-          clientData: map['clientData'],
+          attestationObject: map['attestationObject'],
         );
 }
 
