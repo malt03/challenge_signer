@@ -44,7 +44,8 @@ class MyApp extends HookWidget {
                 onPressed: () async {
                   final credential = await _challengeSignerPlugin.createCredential("Sample App");
                   credentialIdState.value = credential.credentialId;
-                  print(base64Encode(credential.attestationObject));
+                  print(
+                      "const registerAttestationObject = Buffer.from(\"${base64Encode(credential.attestationObject)}\", \"base64\");");
                 },
               ),
               TextButton(

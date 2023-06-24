@@ -9,14 +9,12 @@ environment:
 
 dependencies:
   cbor: ^5.1.2
-  cryptography: ^2.5.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
   pointycastle: ^3.7.3
-  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:
