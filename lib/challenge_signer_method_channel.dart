@@ -1,9 +1,9 @@
 import 'dart:convert';
 import "dart:math";
 
-import 'package:cbor/cbor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:cbor/cbor.dart';
 import "package:pointycastle/export.dart";
 import 'package:pointycastle/asn1.dart';
 
@@ -49,6 +49,10 @@ class MethodChannelChallengeSigner extends ChallengeSignerPlatform {
 
   @override
   createCredential(applicationName) async {
+    // return const MethodChannel('challenge_signer').invokeMethod('createCredential', {
+    //   'applicationName': applicationName,
+    // }).then((result) => Credential.fromMap(result));
+
     final id = _randomBytes(16);
     final idLength = ByteData(2);
     idLength.setUint16(0, id.length);
@@ -69,6 +73,7 @@ class MethodChannelChallengeSigner extends ChallengeSignerPlatform {
     });
 
     KeyPairStore.instance.keyPair = keyPair;
+    (keyPair.privateKey as ECPrivateKey);
 
     List<int> attestedCredentialData = _randomBytes(16);
     attestedCredentialData += idLength.buffer.asUint8List();
@@ -81,9 +86,6 @@ class MethodChannelChallengeSigner extends ChallengeSignerPlatform {
     final attestationObject = CborMap({CborString("authData"): CborBytes(authData)});
 
     return Credential(credentialId: utf8.encode("dummy"), attestationObject: cborEncode(attestationObject));
-    // return const MethodChannel('challenge_signer').invokeMethod('createCredential', {
-    //   'applicationName': applicationName,
-    // }).then((result) => Credential.fromMap(result));
   }
 
   @override

@@ -1,5 +1,9 @@
 import Flutter
-import UIKit
+import Foundation
+
+enum KeychainError: Error {
+  case unhandledError(OSStatus)
+}
 
 public class ChallengeSignerPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
@@ -10,14 +14,37 @@ public class ChallengeSignerPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
-    case "createKey":
-      var error: Unmanaged<CFError>?
-      guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
-        throw error!.takeRetainedValue() as Error
-      }
-      result("iOS " + UIDevice.current.systemVersion)
+    case "write":
+      let access = SecAccessControlCreateWithFlags(
+        nil,
+        kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
+        .userPresence,
+        nil
+      )
+      let query: [String: Any] = [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrAccessControl as String: access as Any,
+        kSecAttrService as String: "KeyChainSandbox",
+        kSecAttrAccount as String: "dummy-account",
+        kSecValueData as String: "dummy-value".data(using: .utf8)!,
+      ]
+      let status = SecItemAdd(query as CFDictionary, nil)
+      guard status == errSecSuccess else { throw KeychainError.unhandledError(status) }
+    case "read":
+      let query: [String: Any] = [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrService as String: "KeyChainSandbox",
+        kSecAttrAccount as String: "dummy-account",
+        kSecMatchLimit as String: kSecMatchLimitOne,
+        kSecReturnData as String: true,
+      ]
+      var item: CFTypeRef?
+      let status = SecItemCopyMatching(query as CFDictionary, &item)
+      guard status == errSecSuccess else { throw KeychainError.unhandledError(status) }
+      print(String(data: item as! Data, encoding: .utf8))
     default:
-      result(FlutterMethodNotImplemented)
+      print(call.arguments)
+      result(["Hello", "World"])
     }
   }
 }
